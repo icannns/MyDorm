@@ -1,0 +1,47 @@
+{
+  "products": {
+    "lastId": 9,
+    "items": [
+      {
+        "id": 3,
+        "name": "Twister",
+        "price": "10000",
+        "stock": "999",
+        "category": "Makanan",
+        "description": "Makanan Ringan"
+      },
+      {
+        "id": 4,
+        "name": "Teh Pucuk",
+        "price": "3500",
+        "stock": "999",
+        "category": "Minuman",
+        "description": "Minuman"
+      },
+      {
+        "id": 7,
+        "name": "LA Ice",
+        "price": "35000",
+        "stock": "999",
+        "category": "Rokok",
+        "description": "Rokok"
+      },
+      {
+        "id": 8,
+        "name": "Alfiano",
+        "price": "15000",
+        "stock": "9999",
+        "category": "Makanan",
+        "description": "Makanan"
+      },
+      {
+        "id": 9,
+        "name": "test",
+        "price": "testt",
+        "stock": "test",
+        "category": "test",
+        "description": "test"
+      }
+    ]
+  }
+}
