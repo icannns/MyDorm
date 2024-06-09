@@ -1,18 +1,5 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: BeliTokenScreen(),
-    );
-  }
-}
-
 class BeliTokenScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -44,108 +31,127 @@ class _BeliTokenFormState extends State<BeliTokenForm> {
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ListView(
         children: <Widget>[
           Text(
             'Isi Data Diri',
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 8),
+          SizedBox(height: 16),
           Text(
             'Masukkan alamat asrama yang ingin kamu isi token-nya',
             style: TextStyle(fontSize: 16),
           ),
           SizedBox(height: 16),
-          TextFormField(
-            decoration: InputDecoration(
-              labelText: 'Nama',
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Tolong masukkan nama';
-              }
-              return null;
-            },
-            onSaved: (value) {
-              _name = value;
-            },
-          ),
+          _buildNameField(),
           SizedBox(height: 16),
-          TextFormField(
-            decoration: InputDecoration(
-              labelText: 'No. Whatsapp',
-            ),
-            keyboardType: TextInputType.phone,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Tolong masukkan nomor WhatsApp';
-              }
-              return null;
-            },
-            onSaved: (value) {
-              _whatsappNumber = value;
-            },
-          ),
+          _buildWhatsAppField(),
           SizedBox(height: 16),
-          DropdownButtonFormField<String>(
-            decoration: InputDecoration(
-              labelText: 'Gedung',
-            ),
-            items: ['Gedung A', 'Gedung B', 'Gedung C']
-                .map((label) => DropdownMenuItem(
-                      child: Text(label),
-                      value: label,
-                    ))
-                .toList(),
-            validator: (value) {
-              if (value == null) {
-                return 'Tolong pilih gedung';
-              }
-              return null;
-            },
-            onChanged: (value) {
-              setState(() {
-                _building = value;
-              });
-            },
-          ),
+          _buildBuildingField(),
           SizedBox(height: 16),
-          TextFormField(
-            decoration: InputDecoration(
-              labelText: 'Nomor Kamar',
-            ),
-            keyboardType: TextInputType.number,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Tolong masukkan nomor kamar';
-              }
-              return null;
-            },
-            onSaved: (value) {
-              _roomNumber = value;
-            },
-          ),
+          _buildRoomNumberField(),
           SizedBox(height: 16),
-          Center(
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50), // Button size
-              ),
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  // Process the data
-                  print('Name: $_name');
-                  print('WhatsApp: $_whatsappNumber');
-                  print('Building: $_building');
-                  print('Room Number: $_roomNumber');
-                }
-              },
-              child: Text('Lanjut'),
-            ),
-          ),
+          _buildSubmitButton(),
         ],
+      ),
+    );
+  }
+
+  TextFormField _buildNameField() {
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: 'Nama',
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Tolong masukkan nama';
+        }
+        return null;
+      },
+      onSaved: (value) {
+        _name = value;
+      },
+    );
+  }
+
+  TextFormField _buildWhatsAppField() {
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: 'No. Whatsapp',
+      ),
+      keyboardType: TextInputType.phone,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Tolong masukkan nomor WhatsApp';
+        }
+        return null;
+      },
+      onSaved: (value) {
+        _whatsappNumber = value;
+      },
+    );
+  }
+
+  DropdownButtonFormField<String> _buildBuildingField() {
+    return DropdownButtonFormField<String>(
+      decoration: InputDecoration(
+        labelText: 'Gedung',
+      ),
+      items: ['Gedung A', 'Gedung B', 'Gedung C']
+          .map((label) => DropdownMenuItem(
+                child: Text(label),
+                value: label,
+              ))
+          .toList(),
+      validator: (value) {
+        if (value == null) {
+          return 'Tolong pilih gedung';
+        }
+        return null;
+      },
+      onChanged: (value) {
+        setState(() {
+          _building = value;
+        });
+      },
+    );
+  }
+
+  TextFormField _buildRoomNumberField() {
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: 'Nomor Kamar',
+      ),
+      keyboardType: TextInputType.number,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Tolong masukkan nomor kamar';
+        }
+        return null;
+      },
+      onSaved: (value) {
+        _roomNumber = value;
+      },
+    );
+  }
+
+  Center _buildSubmitButton() {
+    return Center(
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          minimumSize: Size(double.infinity, 50), // Button size
+        ),
+        onPressed: () {
+          if (_formKey.currentState!.validate()) {
+            _formKey.currentState!.save();
+            // Process the data
+            print('Name: $_name');
+            print('WhatsApp: $_whatsappNumber');
+            print('Building: $_building');
+            print('Room Number: $_roomNumber');
+          }
+        },
+        child: Text('Lanjut'),
       ),
     );
   }

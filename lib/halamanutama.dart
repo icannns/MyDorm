@@ -33,11 +33,11 @@ class MyApp extends StatelessWidget {
         '/transaksi': (context) => PurchaseHistoryPage(),
         '/notifikasi': (context) => NotificationPage(),
         '/profil': (context) => ProfilePage(),
-        '/home': (context) => MainPage(), // Rute untuk halaman utama`
+        '/home': (context) => MainPage(), // Rute untuk halaman utama
         '/scanBarcode': (context) =>
             BarcodeScannerScreen(), // Rute untuk halaman scan barcode
         '/tokenListrik': (context) =>
-            BeliTokenForm(), // Rute untuk halaman token listrik
+            BeliTokenScreen(), // Rute untuk halaman token listrik
         '/keluhan': (context) => ChatScreen(), // Rute untuk halaman ChatScreen
       },
     );
