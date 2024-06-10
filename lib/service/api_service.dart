@@ -5,7 +5,6 @@ import 'package:flutter_application_2/models/product_model.dart';
 class ApiService {
   final String apiUrl = "http://localhost:3000/api";
 
-  // Produk
   Future<List<Product>> getProducts() async {
     final response = await http.get(Uri.parse('$apiUrl/products'));
     if (response.statusCode == 200) {

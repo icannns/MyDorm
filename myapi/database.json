@@ -1,6 +1,6 @@
 {
   "products": {
-    "lastId": 10,
+    "lastId": 12,
     "items": [
       {
         "id": 3,
@@ -11,14 +11,6 @@
         "description": "Makanan Ringan"
       },
       {
-        "id": 4,
-        "name": "Teh Pucuk",
-        "price": "3500",
-        "stock": "999",
-        "category": "Minuman",
-        "description": "Minuman"
-      },
-      {
         "id": 7,
         "name": "LA Ice",
         "price": "35000",
@@ -27,12 +19,20 @@
         "description": "Rokok"
       },
       {
-        "id": 8,
-        "name": "Alfiano",
-        "price": "15000",
-        "stock": "9999",
-        "category": "Makanan",
+        "id": 11,
+        "name": "Beng Beng",
+        "price": "3000",
+        "stock": "999",
+        "category": "Makanan Ringan",
         "description": "Makanan"
+      },
+      {
+        "id": 12,
+        "name": "Ican",
+        "price": "Ican",
+        "stock": "Ican",
+        "category": "999",
+        "description": "ican"
       }
     ]
   },
@@ -44,7 +44,7 @@
         "name": "Chitato Seaweed Potato Chips Lite",
         "price": "11.200",
         "image": "assets/chitato.png",
-        "quantity": 2,
+        "quantity": 3,
         "selected": true
       },
       {
@@ -52,13 +52,13 @@
         "name": "Twister Mini's Snack Chocolate",
         "price": "11.200",
         "image": "assets/twister.png",
-        "quantity": 4,
+        "quantity": 3,
         "selected": true
       }
     ]
   },
   "informasiAsrama": {
-    "lastId": 5,
+    "lastId": 10,
     "items": [
       {
         "id": 1,
@@ -71,6 +71,12 @@
         "judul": "Asrama Festival Food",
         "deskripsi": "Hallo dormitten! Bingung mau ngapain di hari Jumat dan Sabtu ini? Yuk, hadir di acara Asrama Food Festival yang akan dilaksanakan pada: \nTanggal: 17-19 Agustus 2023\nLokasi: Teras Pinang.",
         "gambar": "assets/banner1.png"
+      },
+      {
+        "id": 10,
+        "judul": "telyu fest",
+        "deskripsi": "acara",
+        "gambar": ""
       }
     ]
   }

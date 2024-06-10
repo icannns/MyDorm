@@ -66,21 +66,27 @@ class _ProductPageState extends State<ProductPage> {
   void _navigateToAddProductPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddProductPage(onSubmit: (product) {
-        _apiService.createProduct(product).then((_) => _fetchProducts());
-      })),
+      MaterialPageRoute(
+          builder: (context) => AddProductPage(onSubmit: (product) {
+                _apiService
+                    .createProduct(product)
+                    .then((_) => _fetchProducts());
+              })),
     );
   }
 
   void _navigateToEditProductPage(Product product) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddProductPage(
-        product: product,
-        onSubmit: (updatedProduct) {
-          _apiService.updateProduct(product.id!, updatedProduct).then((_) => _fetchProducts());
-        },
-      )),
+      MaterialPageRoute(
+          builder: (context) => AddProductPage(
+                product: product,
+                onSubmit: (updatedProduct) {
+                  _apiService
+                      .updateProduct(product.id!, updatedProduct)
+                      .then((_) => _fetchProducts());
+                },
+              )),
     );
   }
 
@@ -105,7 +111,8 @@ class _ProductPageState extends State<ProductPage> {
             ),
             ListTile(
               leading: Icon(Icons.person, color: Colors.black),
-              title: Text('Data Mahasiswa', style: TextStyle(color: Colors.black)),
+              title:
+                  Text('Data Mahasiswa', style: TextStyle(color: Colors.black)),
               onTap: () {
                 Navigator.pushNamed(context, '/');
               },
@@ -186,7 +193,8 @@ class _ProductPageState extends State<ProductPage> {
                   int index = entry.key;
                   Product product = entry.value;
                   return DataRow(cells: [
-                    DataCell(Text((index + 1).toString())),  // Menampilkan nomor urut
+                    DataCell(
+                        Text((index + 1).toString())), // Menampilkan nomor urut
                     DataCell(Text(product.name)),
                     DataCell(Text(product.price)),
                     DataCell(Text(product.stock)),
@@ -201,7 +209,8 @@ class _ProductPageState extends State<ProductPage> {
                             _showAlert(context, result, product);
                           }
                         },
-                        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                        itemBuilder: (BuildContext context) =>
+                            <PopupMenuEntry<String>>[
                           const PopupMenuItem<String>(
                             value: 'edit',
                             child: Text('Edit'),

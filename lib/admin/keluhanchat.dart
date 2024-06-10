@@ -1,14 +1,220 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: HomePage(),
+      home: ChatPage(),
+      routes: {
+        '/product': (context) => ProductPage(),
+        '/kelola-pembayaran': (context) => KelolaPembayaranPage(),
+        '/informasi-asrama': (context) => HomePage(),
+      },
+    );
+  }
+}
+
+class ChatPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Keluhan Chat/Call'),
+        backgroundColor: Colors.red,
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              child: Image.asset('assets/mydormlogo.png'),
+              decoration: BoxDecoration(
+                color: Colors.white,
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.person, color: Colors.black),
+              title: Text('Data Mahasiswa'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: Icon(Icons.shopping_bag, color: Colors.black),
+              title: Text('Kelola Produk'),
+              onTap: () {
+                Navigator.pushNamed(context, '/product');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.payment, color: Colors.black),
+              title: Text('Kelola Pembayaran'),
+              onTap: () {
+                Navigator.pushNamed(context, '/kelola-pembayaran');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.chat, color: Colors.red),
+              title: Text('Keluhan Chat/Call'),
+              tileColor: Colors.red[100],
+              onTap: () {},
+            ),
+            ListTile(
+              leading: Icon(Icons.info, color: Colors.black),
+              title: Text('Informasi Asrama'),
+              onTap: () {
+                Navigator.pushNamed(context, '/informasi-asrama');
+              },
+            ),
+          ],
+        ),
+      ),
+      body: Row(
+        children: [
+          // Chat List
+          Expanded(
+            flex: 2,
+            child: ListView(
+              children: [
+                ListTile(
+                  leading: CircleAvatar(child: Text('A')),
+                  title: Text('Annette Black'),
+                  subtitle: Text('Hey, did you talk to her?'),
+                  trailing: Text('2m ago'),
+                  onTap: () {},
+                ),
+                ListTile(
+                  leading: CircleAvatar(child: Text('K')),
+                  title: Text('Kylie Jenner'),
+                  subtitle: Text('Hey, did you talk to her?'),
+                  trailing: Text('2m ago'),
+                  onTap: () {},
+                ),
+                ListTile(
+                  leading: CircleAvatar(child: Text('C')),
+                  title: Text('Cameron Williamson'),
+                  subtitle: Text('Ok, Cya.'),
+                  trailing: Text('35m ago'),
+                  onTap: () {},
+                ),
+                ListTile(
+                  leading: CircleAvatar(child: Text('J')),
+                  title: Text('Jane Cooper'),
+                  subtitle: Text('Thanks, I\'ll call you there.'),
+                  trailing: Text('1d ago'),
+                  onTap: () {},
+                ),
+                ListTile(
+                  leading: CircleAvatar(child: Text('B')),
+                  title: Text('Brennda Smily'),
+                  subtitle: Text('Sent a picture'),
+                  trailing: Text('1d ago'),
+                  onTap: () {},
+                ),
+                ListTile(
+                  leading: CircleAvatar(child: Text('J')),
+                  title: Text('Jacob Jones'),
+                  subtitle: Text('Miss a call'),
+                  trailing: Text('1d ago'),
+                  onTap: () {},
+                ),
+              ],
+            ),
+          ),
+          // Chat Area
+          Expanded(
+            flex: 3,
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView(
+                    padding: EdgeInsets.all(10.0),
+                    children: [
+                      Text('Annette Black', style: TextStyle(fontWeight: FontWeight.bold)),
+                      SizedBox(height: 10),
+                      ChatBubble(text: 'Halo Min', isAdmin: false),
+                      ChatBubble(text: 'Saya butuh bantuan min', isAdmin: false),
+                      ChatBubble(text: 'Halo, Ada yang bisa dibantu dik?', isAdmin: true),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          decoration: InputDecoration(
+                            hintText: 'Ketik pesan disini...',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.send),
+                        onPressed: () {},
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ChatBubble extends StatelessWidget {
+  final String text;
+  final bool isAdmin;
+
+  ChatBubble({required this.text, this.isAdmin = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: isAdmin ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        padding: EdgeInsets.all(12.0),
+        margin: EdgeInsets.symmetric(vertical: 5.0),
+        decoration: BoxDecoration(
+          color: isAdmin ? Colors.grey[300] : Colors.blue[200],
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Text(text),
+      ),
+    );
+  }
+}
+
+class ProductPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Kelola Produk'),
+      ),
+      body: Center(
+        child: Text('Kelola Produk Page'),
+      ),
+    );
+  }
+}
+
+class KelolaPembayaranPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Kelola Pembayaran'),
+      ),
+      body: Center(
+        child: Text('Kelola Pembayaran Page'),
+      ),
     );
   }
 }
@@ -18,195 +224,10 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Keluhan Chat/Call'),
-        backgroundColor: Colors.red[900],
+        title: Text('Informasi Asrama'),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.red[900],
-              ),
-              child: Text(
-                'MyDorm',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.person),
-              title: Text('Data Mahasiswa'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: Icon(Icons.shopping_bag),
-              title: Text('Kelola Produk'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: Icon(Icons.payment),
-              title: Text('Kelola Pembayaran'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: Icon(Icons.chat),
-              title: Text('Keluhan Chat/Call'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: Icon(Icons.info),
-              title: Text('Informasi Asrama'),
-              onTap: () {},
-            ),
-          ],
-        ),
-      ),
-      body: Row(
-        children: [
-          Expanded(
-            flex: 1,
-            child: ListView(
-              children: [
-                UserTile(name: 'Annette Black', message: 'Hey, do you talk to him?', time: '2 days ago'),
-                UserTile(name: 'Kyle Joner', message: 'Can you do it?', time: '3 days ago'),
-                UserTile(name: 'Cameron Williamson', message: 'Thanks, I\'ll call you there.', time: '4 days ago'),
-                UserTile(name: 'Jane Cooper', message: 'I sent it before.', time: '5 days ago'),
-                UserTile(name: 'Brenda Smily', message: 'Sent it already.', time: '5 days ago'),
-                UserTile(name: 'Jacob Jones', message: 'Miss a call', time: '6 days ago'),
-              ],
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: ChatScreen(),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class UserTile extends StatelessWidget {
-  final String name;
-  final String message;
-  final String time;
-
-  UserTile({required this.name, required this.message, required this.time});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundColor: Colors.red[900],
-        child: Text(name[0], style: TextStyle(color: Colors.white)),
-      ),
-      title: Text(name),
-      subtitle: Text(message),
-      trailing: Text(time),
-      onTap: () {},
-    );
-  }
-}
-
-class ChatScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          padding: EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            border: Border(
-              bottom: BorderSide(
-                color: Colors.grey,
-                width: 1.0,
-              ),
-            ),
-          ),
-          child: Row(
-            children: [
-              CircleAvatar(
-                backgroundColor: Colors.red[900],
-                child: Text('A', style: TextStyle(color: Colors.white)),
-              ),
-              SizedBox(width: 10),
-              Text(
-                'Annette Black',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              Spacer(),
-              IconButton(
-                icon: Icon(Icons.call, color: Colors.green),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: Icon(Icons.video_call, color: Colors.red),
-                onPressed: () {},
-              ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: ListView(
-            padding: EdgeInsets.all(16.0),
-            children: [
-              ChatBubble(isMe: true, text: 'Hello! How can I help you?'),
-              ChatBubble(isMe: false, text: 'I need some assistance with my account.'),
-              ChatBubble(isMe: true, text: 'Sure, I can help with that. What seems to be the problem?'),
-              ChatBubble(isMe: false, text: 'I am unable to log in to my account.'),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Type your message',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(width: 10),
-              FloatingActionButton(
-                onPressed: () {},
-                child: Icon(Icons.send),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class ChatBubble extends StatelessWidget {
-  final bool isMe;
-  final String text;
-
-  ChatBubble({required this.isMe, required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        padding: EdgeInsets.all(10),
-        margin: EdgeInsets.symmetric(vertical: 5),
-        decoration: BoxDecoration(
-          color: isMe ? Colors.blue[200] : Colors.grey[200],
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Text(text),
+      body: Center(
+        child: Text('Informasi Asrama Page'),
       ),
     );
   }
