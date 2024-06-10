@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_2/models/keranjang_model.dart';
 
 class CheckoutPage extends StatelessWidget {
+  final List<Keranjang> products;
+
+  CheckoutPage({required this.products}) {
+    print("Received products: $products");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,20 +46,14 @@ class CheckoutPage extends StatelessWidget {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             Card(
               child: Column(
-                children: <Widget>[
-                  ListTile(
-                    leading: Image.asset('assets/twister.png'),
-                  title: Text("Twister Mini's Snack Chocolate"),
-                    subtitle: Text('Rp. 11.200'),
-                    trailing: Text('x1'),
-                  ),
-                  ListTile(
-                    leading: Image.asset('assets/potabee.png'),
-                    title: Text('Potabee Seaweed Potato Chips'),
-                    subtitle: Text('Rp. 11.200'),
-                    trailing: Text('x2'),
-                  ),
-                ],
+                children: products.map((product) {
+                  return ListTile(
+                    leading: Image.asset(product.image),
+                    title: Text(product.name),
+                    subtitle: Text('Rp. ${_formatPrice(product.price)}'),
+                    trailing: Text('x${product.quantity}'),
+                  );
+                }).toList(),
               ),
             ),
             SizedBox(height: 20),
@@ -63,16 +64,18 @@ class CheckoutPage extends StatelessWidget {
                 padding: EdgeInsets.all(16.0), // Perbaikan dilakukan di sini
                 child: Column(
                   children: <Widget>[
-                    _buildTotalRow(
-                        'Twister Mini’s Snack Chocolate', 'Rp. 11.200'),
-                    _buildTotalRow(
-                        'Potabee Seaweed Potato Chips', 'Rp. 22.400'),
-                    _buildTotalRow('Subtotal Produk', 'Rp. 33.600',
+                    ...products.map((product) {
+                      return _buildTotalRow(product.name,
+                          'Rp. ${_formatPrice((double.parse(product.price) * product.quantity).toString())}');
+                    }).toList(),
+                    _buildTotalRow('Subtotal Produk',
+                        'Rp. ${_formatPrice(_calculateSubtotal().toString())}',
                         isBold: true),
                     _buildTotalRow('Subtotal Pengiriman', 'Rp. 0'),
                     _buildTotalRow('Biaya Layanan', 'Rp. 0'),
                     Divider(),
-                    _buildTotalRow('Total Pembayaran', 'Rp. 33.600',
+                    _buildTotalRow('Total Pembayaran',
+                        'Rp. ${_formatPrice(_calculateSubtotal().toString())}',
                         isBold: true),
                   ],
                 ),
@@ -87,7 +90,8 @@ class CheckoutPage extends StatelessWidget {
                 child: Text('Pilih Metode Pembayaran',
                     style: TextStyle(fontSize: 16)),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/metodePembayaran'); // Navigasi ke halaman Metode Pembayaran
+                  Navigator.pushNamed(context,
+                      '/metodePembayaran'); // Navigasi ke halaman Metode Pembayaran
                 },
               ),
             ),
@@ -95,6 +99,11 @@ class CheckoutPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatPrice(String price) {
+    final doublePrice = double.parse(price);
+    return doublePrice.toStringAsFixed(0) + '000';
   }
 
   Widget _buildTotalRow(String title, String amount, {bool isBold = false}) {
@@ -112,5 +121,13 @@ class CheckoutPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  double _calculateSubtotal() {
+    double subtotal = 0.0;
+    for (var product in products) {
+      subtotal += double.parse(product.price) * product.quantity;
+    }
+    return subtotal;
   }
 }

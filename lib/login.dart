@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         '/tjmart': (context) => TjMartPage(),
         '/detailProduk': (context) => DetailProdukPage(),
         '/keranjangBelanja': (context) => KeranjangBelanjaPage(),
-        '/checkout': (context) => CheckoutPage(),
+        '/checkout': (context) => CheckoutPage(products: [],),
         '/metodePembayaran': (context) => LayarMetodePembayaran(),
         '/konfirmasiPembayaran': (context) => LayarKonfirmasiPembayaran(),
         '/pembayaranBerhasil': (context) => PembayaranBerhasilPage(),

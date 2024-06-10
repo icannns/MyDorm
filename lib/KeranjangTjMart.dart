@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_2/models/keranjang_model.dart';
+import 'package:flutter_application_2/service/api_service_keranjang.dart';
+import 'package:flutter_application_2/checkoutTjMart.dart';
 
 class KeranjangBelanjaPage extends StatefulWidget {
   @override
@@ -6,61 +9,54 @@ class KeranjangBelanjaPage extends StatefulWidget {
 }
 
 class _KeranjangBelanjaPageState extends State<KeranjangBelanjaPage> {
-  final List<Map<String, dynamic>> products = [
-    {
-      'name': 'Chitato Seaweed Potato Chips Lite',
-      'price': '11.200',
-      'image': 'assets/chitato.png',
-      'quantity': 2,
-      'selected': false,
-    },
-    {
-      'name': 'Twister Mini\'s Snack Chocolate',
-      'price': '11.200',
-      'image': 'assets/twister.png',
-      'quantity': 1,
-      'selected': true,
-    },
-    {
-      'name': 'Potabee Seaweed Potato Chips',
-      'price': '11.200',
-      'image': 'assets/potabee.png',
-      'quantity': 2,
-      'selected': true,
-    },
-    {
-      'name': 'Beng Beng Share It Chocolate',
-      'price': '11.200',
-      'image': 'assets/bengbeng.png',
-      'quantity': 2,
-      'selected': false,
-    },
-    {
-      'name': 'Oishii Suky - Suky Prawn Chips',
-      'price': '11.200',
-      'image': 'assets/oishii.png',
-      'quantity': 2,
-      'selected': false,
-    },
-  ];
+  final KeranjangApiService apiService = KeranjangApiService();
+  List<Keranjang> products = [];
 
-  void _toggleSelection(int index) {
-    setState(() {
-      products[index]['selected'] = !products[index]['selected'];
-    });
+  @override
+  void initState() {
+    super.initState();
+    _fetchProducts();
   }
 
-  void _increaseQuantity(int index) {
-    setState(() {
-      products[index]['quantity']++;
-    });
+  Future<void> _fetchProducts() async {
+    try {
+      List<Keranjang> fetchedProducts = await apiService.getKeranjang();
+      setState(() {
+        products = fetchedProducts;
+      });
+      print("Products fetched successfully: $products");
+    } catch (e) {
+      print('Failed to load products: $e');
+    }
   }
 
-  void _decreaseQuantity(int index) {
+  Future<void> _toggleSelection(int index) async {
     setState(() {
-      if (products[index]['quantity'] > 1) {
-        products[index]['quantity']--;
-      }
+      products[index].selected = !products[index].selected;
+    });
+    await apiService.updateKeranjang(products[index].id, products[index]);
+  }
+
+  Future<void> _increaseQuantity(int index) async {
+    setState(() {
+      products[index].quantity++;
+    });
+    await apiService.updateKeranjang(products[index].id, products[index]);
+  }
+
+  Future<void> _decreaseQuantity(int index) async {
+    if (products[index].quantity > 1) {
+      setState(() {
+        products[index].quantity--;
+      });
+      await apiService.updateKeranjang(products[index].id, products[index]);
+    }
+  }
+
+  Future<void> _deleteProduct(int index) async {
+    await apiService.deleteFromKeranjang(products[index].id);
+    setState(() {
+      products.removeAt(index);
     });
   }
 
@@ -72,7 +68,7 @@ class _KeranjangBelanjaPageState extends State<KeranjangBelanjaPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context); // Navigasi kembali ke halaman sebelumnya
+            Navigator.pop(context);
           },
         ),
         actions: [
@@ -90,85 +86,100 @@ class _KeranjangBelanjaPageState extends State<KeranjangBelanjaPage> {
           ),
         ],
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: products.length,
-        itemBuilder: (context, index) {
-          return Card(
-            margin: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Checkbox(
-                    value: products[index]['selected'],
-                    onChanged: (bool? value) {
-                      _toggleSelection(index);
-                    },
-                  ),
-                  Image.asset(
-                    products[index]['image'],
-                    width: 50,
-                    height: 50,
-                  ),
-                  SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+      body: products.isEmpty
+          ? Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              padding: const EdgeInsets.all(16.0),
+              itemCount: products.length,
+              itemBuilder: (context, index) {
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
                       children: [
-                        Text(
-                          products[index]['name'],
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                        Checkbox(
+                          value: products[index].selected,
+                          onChanged: (bool? value) {
+                            _toggleSelection(index);
+                          },
+                        ),
+                        Image.asset(
+                          products[index].image,
+                          width: 50,
+                          height: 50,
+                        ),
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                products[index].name,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                'Rp. ${products[index].price}',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        Text(
-                          'Rp. ${products[index]['price']}',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey,
-                          ),
+                        Row(
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.remove),
+                              onPressed: () {
+                                _decreaseQuantity(index);
+                              },
+                            ),
+                            Text(
+                              '${products[index].quantity}',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.add),
+                              onPressed: () {
+                                _increaseQuantity(index);
+                              },
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.delete),
+                              onPressed: () {
+                                _deleteProduct(index);
+                              },
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.remove),
-                        onPressed: () {
-                          _decreaseQuantity(index);
-                        },
-                      ),
-                      Text(
-                        '${products[index]['quantity']}',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.add),
-                        onPressed: () {
-                          _increaseQuantity(index);
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                );
+              },
             ),
-          );
-        },
-      ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
           onPressed: () {
-            Navigator.pushNamed(context, '/checkout'); // Navigasi ke halaman Checkout
+            List<Keranjang> selectedProducts =
+                products.where((product) => product.selected).toList();
+            print("Selected products: $selectedProducts");
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CheckoutPage(products: selectedProducts),
+              ),
+            );
           },
           child: Text('Checkout'),
           style: ElevatedButton.styleFrom(
             padding: EdgeInsets.symmetric(vertical: 16.0),
-          
             textStyle: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,

@@ -51,7 +51,7 @@ class _BeliTokenFormState extends State<BeliTokenForm> {
           SizedBox(height: 16),
           _buildRoomNumberField(),
           SizedBox(height: 16),
-          _buildSubmitButton(),
+          _buildSubmitButton(context),
         ],
       ),
     );
@@ -135,7 +135,7 @@ class _BeliTokenFormState extends State<BeliTokenForm> {
     );
   }
 
-  Center _buildSubmitButton() {
+  Center _buildSubmitButton(BuildContext context) {
     return Center(
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
@@ -149,6 +149,9 @@ class _BeliTokenFormState extends State<BeliTokenForm> {
             print('WhatsApp: $_whatsappNumber');
             print('Building: $_building');
             print('Room Number: $_roomNumber');
+
+            // Navigate to Metode Pembayaran screen
+            Navigator.pushNamed(context, '/metodePembayaran');
           }
         },
         child: Text('Lanjut'),

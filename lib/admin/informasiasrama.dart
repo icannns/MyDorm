@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'kelolaproduk.dart';
 import 'kelolapembayaran.dart';
 import 'datamahasiswa.dart';
+import 'package:flutter_application_2/models/informasi_asrama_model.dart';
+import 'package:flutter_application_2/service/api_service_informasi_asrama.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path_provider/path_provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -23,8 +29,43 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
-  void _confirmDelete(BuildContext context) {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final InformasiAsramaApiService apiService = InformasiAsramaApiService();
+  List<InformasiAsrama> informasiList = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchInformasiAsrama();
+  }
+
+  Future<void> _fetchInformasiAsrama() async {
+    try {
+      List<InformasiAsrama> fetchedInformasi = await apiService.getInformasiAsrama();
+      setState(() {
+        informasiList = fetchedInformasi;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      print('Failed to load informasi asrama: $e');
+    }
+  }
+
+  Future<void> _deleteInformasi(int id) async {
+    await apiService.deleteInformasiAsrama(id);
+    _fetchInformasiAsrama();
+  }
+
+  void _confirmDelete(BuildContext context, int id) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -34,7 +75,7 @@ class HomePage extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () {
-                // Handle delete action here
+                _deleteInformasi(id);
                 Navigator.of(context).pop();
               },
               child: Text('Ya'),
@@ -44,35 +85,6 @@ class HomePage extends StatelessWidget {
                 Navigator.of(context).pop();
               },
               child: Text('Tidak'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showAlert(BuildContext context, String action) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Pilih keperluan untuk mengelola informasi asrama'),
-          content: Text('Anda memilih untuk $action.'),
-          actions: [
-            if (action == 'delete') ...[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  _confirmDelete(context);
-                },
-                child: Text('Delete'),
-              ),
-            ],
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel'),
             ),
           ],
         );
@@ -101,16 +113,14 @@ class HomePage extends StatelessWidget {
             ),
             ListTile(
               leading: Icon(Icons.person, color: Colors.black),
-              title:
-                  Text('Data Mahasiswa', style: TextStyle(color: Colors.black)),
+              title: Text('Data Mahasiswa', style: TextStyle(color: Colors.black)),
               onTap: () {
                 Navigator.pushNamed(context, '/data-mahasiswa');
               },
             ),
             ListTile(
               leading: Icon(Icons.shopping_bag, color: Colors.black),
-              title:
-                  Text('Kelola Produk', style: TextStyle(color: Colors.black)),
+              title: Text('Kelola Produk', style: TextStyle(color: Colors.black)),
               onTap: () {
                 Navigator.pushNamed(context, '/product');
               },
@@ -129,8 +139,7 @@ class HomePage extends StatelessWidget {
             ),
             ListTile(
               leading: Icon(Icons.info, color: Colors.red),
-              title:
-                  Text('Informasi Asrama', style: TextStyle(color: Colors.red)),
+              title: Text('Informasi Asrama', style: TextStyle(color: Colors.red)),
               tileColor: Colors.red[50],
               onTap: () {},
             ),
@@ -152,7 +161,12 @@ class HomePage extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/add_info');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AddInfoPage()),
+                    ).then((_) {
+                      _fetchInformasiAsrama();
+                    });
                   },
                   child: Text('Masukkan Informasi Asrama'),
                 ),
@@ -173,71 +187,57 @@ class HomePage extends StatelessWidget {
             ),
             SizedBox(height: 20),
             Expanded(
-              child: DataTable(
-                columns: [
-                  DataColumn(label: Text('Nomor')),
-                  DataColumn(label: Text('Judul')),
-                  DataColumn(label: Text('Deskripsi')),
-                  DataColumn(label: Text('Gambar')),
-                  DataColumn(label: Text('Action')),
-                ],
-                rows: [
-                  DataRow(cells: [
-                    DataCell(Text('1')),
-                    DataCell(Text('Asrama Festival Food')),
-                    DataCell(Text(
-                        'Hallo dormitten! Bingung mau ngapain di hari Jumat dan Sabtu ini? Yuk, hadir di acara Asrama Food Festival yang akan dilaksanakan pada: \nTanggal: 17-19 Agustus 2023\nLokasi: Teras Pinang.')),
-                    DataCell(Image.asset('assets/banner1.png',
-                        width: 50, height: 50)),
-                    DataCell(
-                      PopupMenuButton<String>(
-                        onSelected: (String result) {
-                          _showAlert(context, result);
-                        },
-                        itemBuilder: (BuildContext context) =>
-                            <PopupMenuEntry<String>>[
-                          const PopupMenuItem<String>(
-                            value: 'edit',
-                            child: Text('Edit'),
+              child: isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : DataTable(
+                      columns: [
+                        DataColumn(label: Text('Nomor')),
+                        DataColumn(label: Text('Judul')),
+                        DataColumn(label: Text('Deskripsi')),
+                        DataColumn(label: Text('Gambar')),
+                        DataColumn(label: Text('Action')),
+                      ],
+                      rows: informasiList.map((informasi) {
+                        return DataRow(cells: [
+                          DataCell(Text(informasi.id.toString())),
+                          DataCell(Text(informasi.judul)),
+                          DataCell(Text(informasi.deskripsi)),
+                          DataCell(Image.asset(informasi.gambar, width: 50, height: 50)),
+                          DataCell(
+                            PopupMenuButton<String>(
+                              onSelected: (String result) {
+                                if (result == 'edit') {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AddInfoPage(
+                                        isEdit: true,
+                                        informasiAsrama: informasi,
+                                      ),
+                                    ),
+                                  ).then((_) {
+                                    _fetchInformasiAsrama();
+                                  });
+                                } else if (result == 'delete') {
+                                  _confirmDelete(context, informasi.id);
+                                }
+                              },
+                              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                                const PopupMenuItem<String>(
+                                  value: 'edit',
+                                  child: Text('Edit'),
+                                ),
+                                const PopupMenuItem<String>(
+                                  value: 'delete',
+                                  child: Text('Delete'),
+                                ),
+                              ],
+                              child: Icon(Icons.more_vert),
+                            ),
                           ),
-                          const PopupMenuItem<String>(
-                            value: 'delete',
-                            child: Text('Delete'),
-                          ),
-                        ],
-                        child: Icon(Icons.more_vert),
-                      ),
+                        ]);
+                      }).toList(),
                     ),
-                  ]),
-                  DataRow(cells: [
-                    DataCell(Text('2')),
-                    DataCell(Text('Asrama Festival Food')),
-                    DataCell(Text(
-                        'Hallo dormitten! Bingung mau ngapain di hari Jumat dan Sabtu ini? Yuk, hadir di acara Asrama Food Festival yang akan dilaksanakan pada: \nTanggal: 17-19 Agustus 2023\nLokasi: Teras Pinang.')),
-                    DataCell(Image.asset('assets/banner1.png',
-                        width: 50, height: 50)),
-                    DataCell(
-                      PopupMenuButton<String>(
-                        onSelected: (String result) {
-                          _showAlert(context, result);
-                        },
-                        itemBuilder: (BuildContext context) =>
-                            <PopupMenuEntry<String>>[
-                          const PopupMenuItem<String>(
-                            value: 'edit',
-                            child: Text('Edit'),
-                          ),
-                          const PopupMenuItem<String>(
-                            value: 'delete',
-                            child: Text('Delete'),
-                          ),
-                        ],
-                        child: Icon(Icons.more_vert),
-                      ),
-                    ),
-                  ]),
-                ],
-              ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -268,12 +268,90 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class AddInfoPage extends StatelessWidget {
+class AddInfoPage extends StatefulWidget {
+  final bool isEdit;
+  final InformasiAsrama? informasiAsrama;
+
+  AddInfoPage({this.isEdit = false, this.informasiAsrama});
+
+  @override
+  _AddInfoPageState createState() => _AddInfoPageState();
+}
+
+class _AddInfoPageState extends State<AddInfoPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _judulController = TextEditingController();
+  final _deskripsiController = TextEditingController();
+  final InformasiAsramaApiService apiService = InformasiAsramaApiService();
+  File? _image;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isEdit && widget.informasiAsrama != null) {
+      _judulController.text = widget.informasiAsrama!.judul;
+      _deskripsiController.text = widget.informasiAsrama!.deskripsi;
+      _image = File(widget.informasiAsrama!.gambar);
+    }
+  }
+
+  @override
+  void dispose() {
+    _judulController.dispose();
+    _deskripsiController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      File? compressedFile = await _compressImage(File(pickedFile.path));
+      setState(() {
+        _image = compressedFile;
+      });
+    }
+  }
+
+  Future<File?> _compressImage(File file) async {
+    final dir = await getTemporaryDirectory();
+    final targetPath = "${dir.absolute.path}/temp.jpg";
+    final result = await FlutterImageCompress.compressAndGetFile(
+      file.absolute.path,
+      targetPath,
+      quality: 85,
+    );
+    return result;
+  }
+
+  Future<void> _saveInformasiAsrama() async {
+    if (_formKey.currentState!.validate()) {
+      final informasiAsrama = InformasiAsrama(
+        id: widget.isEdit ? widget.informasiAsrama!.id : 0,
+        judul: _judulController.text,
+        deskripsi: _deskripsiController.text,
+        gambar: _image?.path ?? '',
+      );
+
+      try {
+        if (widget.isEdit) {
+          await apiService.updateInformasiAsrama(informasiAsrama.id, informasiAsrama);
+        } else {
+          await apiService.addInformasiAsrama(informasiAsrama);
+        }
+        Navigator.pop(context, true);
+      } catch (e) {
+        print('Failed to save informasi asrama: $e');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Masukkan Informasi Asrama'),
+        title: Text(widget.isEdit ? 'Edit Informasi Asrama' : 'Masukkan Informasi Asrama'),
         backgroundColor: Colors.white,
         titleTextStyle: TextStyle(color: Colors.black),
         iconTheme: IconThemeData(color: Colors.black),
@@ -287,48 +365,55 @@ class AddInfoPage extends StatelessWidget {
           child: Container(
             width: 600,
             padding: EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Masukan Informasi Asrama',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 20),
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Nomor',
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.isEdit ? 'Edit Informasi Asrama' : 'Masukan Informasi Asrama',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                ),
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Judul',
+                  SizedBox(height: 20),
+                  TextFormField(
+                    controller: _judulController,
+                    decoration: InputDecoration(
+                      labelText: 'Judul',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter judul';
+                      }
+                      return null;
+                    },
                   ),
-                ),
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Deskripsi',
+                  TextFormField(
+                    controller: _deskripsiController,
+                    decoration: InputDecoration(
+                      labelText: 'Deskripsi',
+                    ),
+                    maxLines: 3,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter deskripsi';
+                      }
+                      return null;
+                    },
                   ),
-                  maxLines: 3,
-                ),
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Gambar',
-                    suffixIcon: Icon(Icons.image),
+                  TextButton(
+                    onPressed: _pickImage,
+                    child: Text('Pilih Gambar'),
                   ),
-                  readOnly: true,
-                  onTap: () {
-                    // Handle image selection
-                  },
-                ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    // Handle save information here
-                  },
-                  child: Text('Simpan Data'),
-                ),
-              ],
+                  if (_image != null) ...[
+                    Image.file(_image!, width: 100, height: 100),
+                  ],
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: _saveInformasiAsrama,
+                    child: Text(widget.isEdit ? 'Update Data' : 'Simpan Data'),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
