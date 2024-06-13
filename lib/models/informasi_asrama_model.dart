@@ -2,13 +2,11 @@ class InformasiAsrama {
   final int id;
   final String judul;
   final String deskripsi;
-  final String gambar;
 
   InformasiAsrama({
     required this.id,
     required this.judul,
     required this.deskripsi,
-    required this.gambar,
   });
 
   factory InformasiAsrama.fromJson(Map<String, dynamic> json) {
@@ -16,7 +14,6 @@ class InformasiAsrama {
       id: json['id'],
       judul: json['judul'],
       deskripsi: json['deskripsi'],
-      gambar: json['gambar'],
     );
   }
 
@@ -25,7 +22,6 @@ class InformasiAsrama {
       'id': id,
       'judul': judul,
       'deskripsi': deskripsi,
-      'gambar': gambar,
     };
   }
 }

@@ -9,11 +9,10 @@ const port = 3000;
 app.use(bodyParser.json());
 app.use(cors());
 
-// Konfigurasi koneksi ke database MySQL
 const db = mysql.createConnection({
   host: 'localhost',
-  user: 'root',  // Sesuaikan dengan user MySQL Anda
-  password: '',  // Sesuaikan dengan password MySQL Anda
+  user: 'root',
+  password: '',
   database: 'mydormdb'
 });
 
@@ -24,7 +23,7 @@ db.connect((err) => {
   console.log('Connected to MySQL Database.');
 });
 
-// Endpoint untuk produk
+// Endpoint for products
 app.get('/api/products', (req, res) => {
   const sql = 'SELECT * FROM products';
   db.query(sql, (err, results) => {
@@ -66,6 +65,96 @@ app.delete('/api/products/:id', (req, res) => {
       return res.status(500).send(err);
     }
     res.json({ message: 'Product deleted' });
+  });
+});
+
+// Endpoint for informasi_asrama
+app.get('/api/informasi_asrama', (req, res) => {
+  const sql = 'SELECT * FROM informasi_asrama';
+  db.query(sql, (err, results) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.json(results);
+  });
+});
+
+app.post('/api/informasi_asrama', (req, res) => {
+  const { judul, deskripsi } = req.body;
+  const sql = 'INSERT INTO informasi_asrama (judul, deskripsi) VALUES (?, ?)';
+  db.query(sql, [judul, deskripsi], (err, result) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.json({ id: result.insertId, judul, deskripsi });
+  });
+});
+
+app.put('/api/informasi_asrama/:id', (req, res) => {
+  const { id } = req.params;
+  const { judul, deskripsi } = req.body;
+  const sql = 'UPDATE informasi_asrama SET judul = ?, deskripsi = ? WHERE id = ?';
+  db.query(sql, [judul, deskripsi, id], (err) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.json({ id, judul, deskripsi });
+  });
+});
+
+app.delete('/api/informasi_asrama/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = 'DELETE FROM informasi_asrama WHERE id = ?';
+  db.query(sql, [id], (err) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.json({ message: 'Informasi asrama deleted' });
+  });
+});
+
+// Endpoint for penghuni_asrama
+app.get('/api/penghuni_asrama', (req, res) => {
+  const sql = 'SELECT * FROM penghuni_asrama';
+  db.query(sql, (err, results) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.json(results);
+  });
+});
+
+app.post('/api/penghuni_asrama', (req, res) => {
+  const { idPenghuniAsrama, nama, gedung, lantai, nomorKamar, nomorKasur, nomorToken } = req.body;
+  const sql = 'INSERT INTO penghuni_asrama (idPenghuniAsrama, nama, gedung, lantai, nomorKamar, nomorKasur, nomorToken) VALUES (?, ?, ?, ?, ?, ?, ?)';
+  db.query(sql, [idPenghuniAsrama, nama, gedung, lantai, nomorKamar, nomorKasur, nomorToken], (err, result) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.json({ id: result.insertId, idPenghuniAsrama, nama, gedung, lantai, nomorKamar, nomorKasur, nomorToken });
+  });
+});
+
+app.put('/api/penghuni_asrama/:id', (req, res) => {
+  const { id } = req.params;
+  const { idPenghuniAsrama, nama, gedung, lantai, nomorKamar, nomorKasur, nomorToken } = req.body;
+  const sql = 'UPDATE penghuni_asrama SET idPenghuniAsrama = ?, nama = ?, gedung = ?, lantai = ?, nomorKamar = ?, nomorKasur = ?, nomorToken = ? WHERE id = ?';
+  db.query(sql, [idPenghuniAsrama, nama, gedung, lantai, nomorKamar, nomorKasur, nomorToken, id], (err) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.json({ id, idPenghuniAsrama, nama, gedung, lantai, nomorKamar, nomorKasur, nomorToken });
+  });
+});
+
+app.delete('/api/penghuni_asrama/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = 'DELETE FROM penghuni_asrama WHERE id = ?';
+  db.query(sql, [id], (err) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.json({ message: 'Penghuni asrama deleted' });
   });
 });
 

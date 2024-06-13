@@ -4,10 +4,6 @@ import 'kelolapembayaran.dart';
 import 'datamahasiswa.dart';
 import 'package:flutter_application_2/models/informasi_asrama_model.dart';
 import 'package:flutter_application_2/service/api_service_informasi_asrama.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:path_provider/path_provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -47,7 +43,8 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _fetchInformasiAsrama() async {
     try {
-      List<InformasiAsrama> fetchedInformasi = await apiService.getInformasiAsrama();
+      List<InformasiAsrama> fetchedInformasi =
+          await apiService.getInformasiAsrama();
       setState(() {
         informasiList = fetchedInformasi;
         isLoading = false;
@@ -113,14 +110,16 @@ class _HomePageState extends State<HomePage> {
             ),
             ListTile(
               leading: Icon(Icons.person, color: Colors.black),
-              title: Text('Data Mahasiswa', style: TextStyle(color: Colors.black)),
+              title:
+                  Text('Data Mahasiswa', style: TextStyle(color: Colors.black)),
               onTap: () {
                 Navigator.pushNamed(context, '/data-mahasiswa');
               },
             ),
             ListTile(
               leading: Icon(Icons.shopping_bag, color: Colors.black),
-              title: Text('Kelola Produk', style: TextStyle(color: Colors.black)),
+              title:
+                  Text('Kelola Produk', style: TextStyle(color: Colors.black)),
               onTap: () {
                 Navigator.pushNamed(context, '/product');
               },
@@ -139,7 +138,8 @@ class _HomePageState extends State<HomePage> {
             ),
             ListTile(
               leading: Icon(Icons.info, color: Colors.red),
-              title: Text('Informasi Asrama', style: TextStyle(color: Colors.red)),
+              title:
+                  Text('Informasi Asrama', style: TextStyle(color: Colors.red)),
               tileColor: Colors.red[50],
               onTap: () {},
             ),
@@ -194,7 +194,6 @@ class _HomePageState extends State<HomePage> {
                         DataColumn(label: Text('Nomor')),
                         DataColumn(label: Text('Judul')),
                         DataColumn(label: Text('Deskripsi')),
-                        DataColumn(label: Text('Gambar')),
                         DataColumn(label: Text('Action')),
                       ],
                       rows: informasiList.map((informasi) {
@@ -202,7 +201,6 @@ class _HomePageState extends State<HomePage> {
                           DataCell(Text(informasi.id.toString())),
                           DataCell(Text(informasi.judul)),
                           DataCell(Text(informasi.deskripsi)),
-                          DataCell(Image.asset(informasi.gambar, width: 50, height: 50)),
                           DataCell(
                             PopupMenuButton<String>(
                               onSelected: (String result) {
@@ -222,7 +220,8 @@ class _HomePageState extends State<HomePage> {
                                   _confirmDelete(context, informasi.id);
                                 }
                               },
-                              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                              itemBuilder: (BuildContext context) =>
+                                  <PopupMenuEntry<String>>[
                                 const PopupMenuItem<String>(
                                   value: 'edit',
                                   child: Text('Edit'),
@@ -283,7 +282,6 @@ class _AddInfoPageState extends State<AddInfoPage> {
   final _judulController = TextEditingController();
   final _deskripsiController = TextEditingController();
   final InformasiAsramaApiService apiService = InformasiAsramaApiService();
-  File? _image;
 
   @override
   void initState() {
@@ -291,7 +289,6 @@ class _AddInfoPageState extends State<AddInfoPage> {
     if (widget.isEdit && widget.informasiAsrama != null) {
       _judulController.text = widget.informasiAsrama!.judul;
       _deskripsiController.text = widget.informasiAsrama!.deskripsi;
-      _image = File(widget.informasiAsrama!.gambar);
     }
   }
 
@@ -302,41 +299,18 @@ class _AddInfoPageState extends State<AddInfoPage> {
     super.dispose();
   }
 
-  Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      File? compressedFile = await _compressImage(File(pickedFile.path));
-      setState(() {
-        _image = compressedFile;
-      });
-    }
-  }
-
-  Future<File?> _compressImage(File file) async {
-    final dir = await getTemporaryDirectory();
-    final targetPath = "${dir.absolute.path}/temp.jpg";
-    final result = await FlutterImageCompress.compressAndGetFile(
-      file.absolute.path,
-      targetPath,
-      quality: 85,
-    );
-    return result;
-  }
-
   Future<void> _saveInformasiAsrama() async {
     if (_formKey.currentState!.validate()) {
       final informasiAsrama = InformasiAsrama(
         id: widget.isEdit ? widget.informasiAsrama!.id : 0,
         judul: _judulController.text,
         deskripsi: _deskripsiController.text,
-        gambar: _image?.path ?? '',
       );
 
       try {
         if (widget.isEdit) {
-          await apiService.updateInformasiAsrama(informasiAsrama.id, informasiAsrama);
+          await apiService.updateInformasiAsrama(
+              informasiAsrama.id, informasiAsrama);
         } else {
           await apiService.addInformasiAsrama(informasiAsrama);
         }
@@ -351,7 +325,9 @@ class _AddInfoPageState extends State<AddInfoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.isEdit ? 'Edit Informasi Asrama' : 'Masukkan Informasi Asrama'),
+        title: Text(widget.isEdit
+            ? 'Edit Informasi Asrama'
+            : 'Masukkan Informasi Asrama'),
         backgroundColor: Colors.white,
         titleTextStyle: TextStyle(color: Colors.black),
         iconTheme: IconThemeData(color: Colors.black),
@@ -371,7 +347,9 @@ class _AddInfoPageState extends State<AddInfoPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.isEdit ? 'Edit Informasi Asrama' : 'Masukan Informasi Asrama',
+                    widget.isEdit
+                        ? 'Edit Informasi Asrama'
+                        : 'Masukan Informasi Asrama',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 20),
@@ -400,13 +378,6 @@ class _AddInfoPageState extends State<AddInfoPage> {
                       return null;
                     },
                   ),
-                  TextButton(
-                    onPressed: _pickImage,
-                    child: Text('Pilih Gambar'),
-                  ),
-                  if (_image != null) ...[
-                    Image.file(_image!, width: 100, height: 100),
-                  ],
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: _saveInformasiAsrama,

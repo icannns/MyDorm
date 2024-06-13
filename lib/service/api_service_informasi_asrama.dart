@@ -5,51 +5,41 @@ import 'package:flutter_application_2/models/informasi_asrama_model.dart';
 class InformasiAsramaApiService {
   final String apiUrl = "http://localhost:3000/api";
 
-  // Mendapatkan informasi asrama
   Future<List<InformasiAsrama>> getInformasiAsrama() async {
-    final response = await http.get(Uri.parse('$apiUrl/informasi-asrama'));
+    final response = await http.get(Uri.parse('$apiUrl/informasi_asrama'));
     if (response.statusCode == 200) {
       List jsonResponse = json.decode(response.body);
-      return jsonResponse.map((item) => InformasiAsrama.fromJson(item)).toList();
+      return jsonResponse.map((data) => InformasiAsrama.fromJson(data)).toList();
     } else {
       throw Exception('Failed to load informasi asrama');
     }
   }
 
-  // Menambahkan informasi asrama
-  Future<InformasiAsrama> addInformasiAsrama(InformasiAsrama informasi) async {
+  Future<void> addInformasiAsrama(InformasiAsrama informasiAsrama) async {
     final response = await http.post(
-      Uri.parse('$apiUrl/informasi-asrama'),
+      Uri.parse('$apiUrl/informasi_asrama'),
       headers: {'Content-Type': 'application/json'},
-      body: json.encode(informasi.toJson()),
+      body: json.encode(informasiAsrama.toJson()),
     );
-    if (response.statusCode == 200) {
-      return InformasiAsrama.fromJson(json.decode(response.body));
-    } else {
+    if (response.statusCode != 200) {
       throw Exception('Failed to add informasi asrama');
     }
   }
 
-  // Mengupdate informasi asrama
-  Future<InformasiAsrama> updateInformasiAsrama(int id, InformasiAsrama informasi) async {
+  Future<void> updateInformasiAsrama(int id, InformasiAsrama informasiAsrama) async {
     final response = await http.put(
-      Uri.parse('$apiUrl/informasi-asrama/$id'),
+      Uri.parse('$apiUrl/informasi_asrama/$id'),
       headers: {'Content-Type': 'application/json'},
-      body: json.encode(informasi.toJson()),
+      body: json.encode(informasiAsrama.toJson()),
     );
-    if (response.statusCode == 200) {
-      return InformasiAsrama.fromJson(json.decode(response.body));
-    } else {
+    if (response.statusCode != 200) {
       throw Exception('Failed to update informasi asrama');
     }
   }
 
-  // Menghapus informasi asrama
   Future<void> deleteInformasiAsrama(int id) async {
-    final response = await http.delete(Uri.parse('$apiUrl/informasi-asrama/$id'));
-    if (response.statusCode == 200) {
-      return;
-    } else {
+    final response = await http.delete(Uri.parse('$apiUrl/informasi_asrama/$id'));
+    if (response.statusCode != 200) {
       throw Exception('Failed to delete informasi asrama');
     }
   }
